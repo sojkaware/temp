@@ -1,0 +1,20 @@
+
+from scrapy.crawler import CrawlerProcess
+from scrapy.utils.project import get_project_settings
+
+# Import the spider class from the spider file
+from spider_courseware1 import MySpider
+
+# Get the Scrapy settings object
+settings = get_project_settings()
+
+# Override default settings with custom settings
+settings_module = 'spider_courseware_settings'
+settings.setmodule(settings_module, priority='project')
+
+# Create a new CrawlerProcess object with the custom settings
+process = CrawlerProcess(settings)
+
+# Add the spider to the process and start crawling
+process.crawl(MySpider)
+process.start()

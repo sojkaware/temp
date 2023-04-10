@@ -2,23 +2,26 @@ import scrapy
 import os
 from urllib.parse import urlparse
 
+import credentials
+
 class MySpider(scrapy.Spider):
     name = 'myspider'
-    start_urls = ['https://example.com']
+    #start_urls = ['https://cw.fel.cvut.cz/wiki/']
+    # start_urls = ['https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?id=7685']
+    start_urls = ['https://moodle.fel.cvut.cz/auth/shibboleth/index.php']
 
     def parse(self, response):
         # Check if login processing is enabled
         if self.settings.getbool('LOGIN_ENABLED', True):
-            # Extract the CSRF token from the login form
-            csrf_token = response.xpath('//input[@name="csrf_token"]/@value').extract_first()
-
             # Create a FormRequest with the login credentials
             yield scrapy.FormRequest(
-                url='https://example.com/login',
+                #url='https://cw.fel.cvut.cz/Shibboleth.sso/Login?target=https://cw.fel.cvut.cz/wiki/',
+                # https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?id=7685
+                # https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?code=B1M16FIM1&semester=B222
+                url = 'https://moodle.fel.cvut.cz/auth/shibboleth/index.php',
                 formdata={
-                    'username': 'myusername',
-                    'password': 'mypassword',
-                    'csrf_token': csrf_token,
+                    'j_username': credentials.LOGIN_NAME,
+                    'j_password': credentials.LOGIN_PASS,
                 },
                 callback=self.after_login
             )
