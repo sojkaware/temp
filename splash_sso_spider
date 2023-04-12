@@ -1,0 +1,53 @@
+
+import credentials
+import scrapy
+from scrapy_splash import SplashRequest
+
+class SSOLoginSpider(scrapy.Spider):
+    name = 'sso_login'
+    login_url = 'https://moodle.fel.cvut.cz/auth/shibboleth/index.php'
+    form_username = credentials.LOGIN_NAME
+    form_password = credentials.LOGIN_PASS
+
+    def start_requests(self):
+        yield SplashRequest(url=self.login_url, callback=self.parse_login, args={'wait': 2})
+
+    def parse_login(self, response):
+        saml_token = response.css('input[name="SAMLRequest"]::attr(value)').get()
+
+        lua_script = f"""
+        function main(splash, args)
+            splash:set_user_agent("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36")
+            assert(splash:go(args.url))
+            splash:wait(args.wait)
+
+            local username_input = splash:select('input[name="j_username"]')
+            username_input:send_text(args.form_username)
+
+            local password_input = splash:select('input[name="j_password"]')
+            password_input:send_text(args.form_password)
+
+            local submit_button = splash:select('input[name="_eventId_proceed"]')
+            submit_button:click()
+            splash:wait(args.wait * 2)
+
+            return {{
+                html = splash:html(),
+            }}
+        end
+        """
+
+        yield SplashRequest(url=response.url, callback=self.parse_after_login, endpoint='execute', args={
+            'lua_source': lua_script,
+            'wait': 2,
+            'form_username': self.form_username,
+            'form_password': self.form_password
+        })
+
+    def parse_after_login(self, response):
+        if "Welcome" in response.text:
+            self.log("Successfully logged in!")
+        else:
+            self.log("Failed to log in.")
+
+

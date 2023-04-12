@@ -10,33 +10,43 @@ class MySpider(scrapy.Spider):
     # start_urls = ['https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?id=7685']
     start_urls = ['https://moodle.fel.cvut.cz/auth/shibboleth/index.php']
 
-    def parse(self, response):
-        # Check if login processing is enabled
-        if self.settings.getbool('LOGIN_ENABLED', True):
-            # Create a FormRequest with the login credentials
-            yield scrapy.FormRequest(
-                #url='https://cw.fel.cvut.cz/Shibboleth.sso/Login?target=https://cw.fel.cvut.cz/wiki/',
-                # https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?id=7685
-                # https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?code=B1M16FIM1&semester=B222
-                url = 'https://moodle.fel.cvut.cz/auth/shibboleth/index.php',
-                formdata={
-                    'j_username': credentials.LOGIN_NAME,
-                    'j_password': credentials.LOGIN_PASS,
-                },
-                callback=self.after_login
-            )
-        else:
-            # Login processing is disabled. Proceed to scrape the first page.
-            self.logger.info("Login processing disabled. Scraping first page.")
-            self.save_page(response)
 
-            # Extract all the links on the page and scrape them
-            self.logger.info("Scraping links on the first page.")
-            for link in response.css('a::attr(href)').getall():
-                yield response.follow(link, self.parse_link)
+    def start_requests(self):
+        yield scrapy.Request('https://moodle.fel.cvut.cz/auth/shibboleth/index.php', callback=self.form_input)
+    def form_input(self, response):
+        
+        yield scrapy.FormRequest.from_response(response, formdata={'j_username': credentials.LOGIN_NAME, 'j_password': credentials.LOGIN_PASS,}, callback=self.after_login)
+        
+
+    # def parse(self, response):
+    #     # Check if login processing is enabled
+    #     if self.settings.getbool('LOGIN_ENABLED', True):
+    #         # Create a FormRequest with the login credentials
+    #         yield scrapy.FormRequest.from_response(
+    #             response,
+    #             #url='https://cw.fel.cvut.cz/Shibboleth.sso/Login?target=https://cw.fel.cvut.cz/wiki/',
+    #             # https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?id=7685
+    #             # https://moodle.fel.cvut.cz/local/kos/pages/course/info.php?code=B1M16FIM1&semester=B222
+    #             url = 'https://moodle.fel.cvut.cz/auth/shibboleth/index.php',
+    #             formdata={
+    #                 'j_username': credentials.LOGIN_NAME,
+    #                 'j_password': credentials.LOGIN_PASS,
+    #             },
+    #             callback=self.after_login
+    #         )
+    #     else:
+    #         # Login processing is disabled. Proceed to scrape the first page.
+    #         self.logger.info("Login processing disabled. Scraping first page.")
+    #         self.save_page(response)
+
+    #         # Extract all the links on the page and scrape them
+    #         self.logger.info("Scraping links on the first page.")
+    #         for link in response.css('a::attr(href)').getall():
+    #             yield response.follow(link, self.parse_link)
 
     def after_login(self, response):
         # Check if the login was successful
+  
         if 'Welcome' in response.text:
             # Scrape the first page and save it to a file
             self.logger.info("Login successful. Scraping first page.")
