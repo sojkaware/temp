@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Quick Notes",
+  "version": "1.0",
+  "description": "A quick and easy way to copy predetermined text stored in notes.",
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "images/icon16.png",
+      "48": "images/icon48.png",
+      "128": "images/icon128.png"
+    }
+  },
+  "permissions": [
+    "clipboardWrite",
+    "storage"
+  ],
+  "commands": {
+    "toggle_quick_notes": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+K"
+      },
+      "description": "Toggle Quick Notes"
+    }
+  },
+  "icons": {
+    "16": "images/icon16.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  }
+}

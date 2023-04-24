@@ -1,0 +1,62 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.sidebar {
+  width: 20%;
+  height: 100vh;
+  background-color: lightgray;
+  overflow-y: auto;
+}
+
+.search-bar {
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+  font-size: 14px;
+  outline: none;
+  border: none;
+}
+
+.notes-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.note-button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  background-color: darkgray;
+  color: white;
+  text-align: left;
+  text-decoration: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+.note-button:hover {
+  background-color: #444;
+}
+
+.dropdown-menu {
+  display: none;
+  position: absolute;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+}
+
+.dropdown-menu a {
+  display: block;
+  padding: 8px;
+  text-decoration: none;
+  color: black;
+}
+
+.dropdown-menu a:hover {
+  background-color: #f1f1f1;
+}

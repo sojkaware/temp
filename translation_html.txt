@@ -1,0 +1,42 @@
+# Import required libraries
+from bs4 import BeautifulSoup
+from transformers import MarianMTModel, MarianTokenizer
+import os
+
+# Load the model and tokenizer for translation
+model_name = "Helsinki-NLP/opus-mt-en-cs"
+tokenizer = MarianTokenizer.from_pretrained(model_name)
+model = MarianMTModel.from_pretrained(model_name)
+
+def translate_text(text_in, target_language):
+    """Translate the input text to the target language using transformer architecture."""
+    input_tokens = tokenizer(text_in, return_tensors="pt", padding=True)
+    translated_tokens = model.generate(**input_tokens)
+    translated_text = tokenizer.batch_decode(translated_tokens, skip_special_tokens=True)
+    return translated_text[0]
+
+def main():
+    # Load input HTML file
+    input_folder = "input_html"
+    output_folder = "output_html"
+    input_filename = "example.html"
+    output_filename = "translated_example.html"
+    
+    with open(os.path.join(input_folder, input_filename), "r", encoding="utf-8") as f:
+        html_content = f.read()
+
+    # Parse the HTML file using BeautifulSoup
+    soup = BeautifulSoup(html_content, "html.parser")
+
+    # Loop through the logical blocks of the HTML file
+    for tag in soup.find_all(["p", "h1", "h2", "h3", "h4", "h5", "h6", "span", "figcaption"]):
+        original_text = tag.get_text()
+        translated_text = translate_text(original_text, "czech")
+        tag.string.replace_with(translated_text)
+
+    # Save the translated HTML file
+    with open(os.path.join(output_folder, output_filename), "w", encoding="utf-8") as f:
+        f.write(str(soup))
+
+if __name__ == "__main__":
+    main()

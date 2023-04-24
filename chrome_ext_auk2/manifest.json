@@ -1,0 +1,25 @@
+{
+  "manifest_version": 3,
+  "name": "Test and End",
+  "version": "1.0",
+  "permissions": ["activeTab"],
+  "permissions": ["tabs"], // maybe this is not needed
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"]
+    }
+  ]
+}
+
+//Add the extension icons (icon16.png, icon48.png, and icon128.png) to the extension directory.
+//Load the extension into Chrome by going to chrome://extensions, enabling "Developer mode", and clicking "Load unpacked", then selecting the extension directory.

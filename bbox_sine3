@@ -1,0 +1,38 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+def bbox_fcn_sine3(input_parameters):
+    # transpose input_parameters to make it a column vector
+ 
+    num_samples = 10
+
+    dt = 0.2
+    t = np.array([np.arange(num_samples) * dt])
+    y = (input_parameters[:,[0]] * np.sin(input_parameters[:,[1]] @ t) + input_parameters[:,[2]])
+    # transpose y to make it a row vector
+
+    return y
+
+
+input_parameters = np.array([[1, 1, 0.1], [1, 1, 1]])
+num_samples = 10
+
+y = bbox_fcn_sine3(input_parameters)
+
+# define two matrices
+A = np.array([[1, 2, 3], [4, 5, 6]])    # shape: (2, 3)
+B = np.array([[7, 8], [9, 10], [11, 12]])  # shape: (3, 2)
+
+# perform matrix multiplication
+C = np.dot(A, B)  # shape: (2, 2)
+
+# or alternatively, using the @ operator
+C = A @ B  # shape: (2, 2)
+
+print(C)
+
+
+
+# y = bbox_fcn_sine3(input_parameters, num_samples)
+# plt.plot(y)
+#plt.show()

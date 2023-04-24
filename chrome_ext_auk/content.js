@@ -1,0 +1,80 @@
+function fillAndSubmit(inputValue) {
+    const formNumberElement = document.querySelector('input[type="number"]');
+    const submitButtonElement = document.querySelector('button[type="button"]');
+  
+    formNumberElement.value = inputValue;
+    formNumberElement.dispatchEvent(new Event('change', { bubbles: true }));
+    submitButtonElement.click();
+  }
+  
+  function getTimeRemaining(timeElement) {
+    const regex = /\d{1,2}\.\s\d{1,2}\.\s\d{4},\s\d{2}:\d{2}:\d{2}/;
+    const dateString = timeElement.innerText.match(regex)[0];
+    const eventTime = new Date(dateString.replace(/\s/, '').replace(/(\.)/g, '/')).getTime();
+    const currentTime = new Date().getTime();
+  
+    return eventTime - currentTime;
+  }
+  
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === 'test') {
+      fillAndSubmit(request.inputValue);
+    } else if (request.action === 'end') {
+      const timeElement = document.querySelector('span.tw-text-foreground-color span.text-bold');
+      const remainingTime = getTimeRemaining(timeElement);
+      const timeToSubmit = remainingTime - 10000;
+  
+      if (timeToSubmit > 0) {
+        setTimeout(() => {
+          fillAndSubmit(request.inputValue);
+        }, timeToSubmit);
+      } else {
+        console.log('The time to submit has already passed.');
+      }
+    }
+  });
+
+// function fillAndSubmit(inputValue) {
+//   const formNumberElement = document.querySelector('input[type="number"][ngcontent-aukro-app-universal-c256]');
+//   const submitButtonElement = document.querySelector('button[ngcontent-aukro-app-universal-c44]');
+
+//   formNumberElement.value = inputValue;
+//   // formNumberElement.dispatchEvent(new Event('change', { bubbles: true }));
+//   submitButtonElement.click();
+// }
+// // FORM_NUMBER_ELEMENT and SUBMIT_BUTTON_ELEMENT
+// // function fillAndSubmit(inputValue) {
+// //   const formNumberElement = document.querySelector('input[type="number"][ngcontent-aukro-app-universal-c256]');
+// //   const submitButtonElement = document.querySelector('button[ngcontent-aukro-app-universal-c44]');
+
+// //   formNumberElement.value = inputValue;
+// //   submitButtonElement.click();
+// // }
+
+// // TIME_ELEMENT
+// function getTimeRemaining(timeElement) {
+//   const regex = /\d{1,2}\.\s\d{1,2}\.\s\d{4},\s\d{2}:\d{2}:\d{2}/;
+//   const dateString = timeElement.innerText.match(regex)[0];
+//   const eventTime = new Date(dateString.replace(/\s/, '').replace(/(\.)/g, '/')).getTime();
+//   const currentTime = new Date().getTime();
+
+//   return eventTime - currentTime;
+// }
+
+// chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+//   if (request.action === 'test') {
+//     fillAndSubmit(request.inputValue);
+//   } else if (request.action === 'end') {
+//     const timeElement = document.querySelector('div[ngcontent-aukro-app-universal-c199] span.tw-text-foreground-color span.text-bold');
+//     const remainingTime = getTimeRemaining(timeElement);
+//     const timeToSubmit = remainingTime - 10000;
+
+//     if (timeToSubmit > 0) {
+//       setTimeout(() => {
+//         fillAndSubmit(request.inputValue);
+//       }, timeToSubmit);
+//     } else {
+//       console.log('The time to submit has already passed.');
+//     }
+//   }
+// });
